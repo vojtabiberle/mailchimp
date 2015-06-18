@@ -11,7 +11,7 @@ $subscriberListCollection = $client->getLists();
 
 $subscriberList = $client->getList(LIST_ID);
 
-$jocho = $client->getMember(LIST_ID, md%(TEST_EMAIL));
+$jocho = $client->getMember(LIST_ID, md5(TEST_EMAIL));
 
 $members = $subscriberList->getMembers();
 
