@@ -2,22 +2,22 @@
 
 namespace Mailchimp\Message;
 
-class ListsCollection extends AbstractMessageCollection implements MessageCollectionInterface
+class ListsCollection extends AbstractMessageCollection
 {
     /**
      * Endpoint string relative to API URL
      *
-     * @var string $endpoint
+     * @var string $__endpoint
      */
-    protected $endpoint = '/lists/';
+    protected $__endpoint = '/lists/';
 
     /**
      * Available HTTP operations
      *
-     * @var array $httpVerbs
+     * @var array $__httpVerbs
      */
-    protected $httpVerbs = ['GET', 'POST'];
+    protected $__httpVerbs = ['GET', 'POST'];
 
-    protected $childClassName = 'Mailchimp\\Message\\Lists';
+    protected $__childClassName = 'Mailchimp\\Message\\Lists';
 
 }

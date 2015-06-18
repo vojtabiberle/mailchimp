@@ -2,9 +2,9 @@
 
 namespace Mailchimp\Message\Members;
 
-use Mailchimp\Message\MessageInterface;
+use Mailchimp\Message\AbstractMessage;
 
-class Stats implements MessageInterface
+class Stats extends AbstractMessage
 {
     /**
      * A subscriber's average open rate.
@@ -60,5 +60,10 @@ class Stats implements MessageInterface
     public function getAllowedHttpVerbs()
     {
         return false;
+    }
+
+    public function createRequestParams()
+    {
+        return null;
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Mailchimp\Message\Members;
 
-use Mailchimp\Message\MessageInterface;
+use Mailchimp\Message\AbstractMessage;
 
-class Location implements MessageInterface
+class Location extends AbstractMessage
 {
     /**
      * @var int $latitude Latitude
@@ -140,5 +140,10 @@ class Location implements MessageInterface
     public function getAllowedHttpVerbs()
     {
         return false;
+    }
+
+    public function createRequestParams()
+    {
+        return null;
     }
 }

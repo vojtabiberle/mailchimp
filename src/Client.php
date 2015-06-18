@@ -2,6 +2,7 @@
 namespace Mailchimp;
 
 use Mailchimp\Exception\Exception;
+use Mailchimp\Exception\RuntimeException;
 use Mailchimp\Message\Client\AccountDetails;
 use Mailchimp\Message\Lists;
 use Mailchimp\Message\ListsCollection;
@@ -19,6 +20,26 @@ class Client
     public function __construct($apikey)
     {
         $this->worker = new Worker($apikey);
+    }
+
+    public function createMessage($name)
+    {
+        $possibleNames[] = $name;
+        $possibleNames[] = '\\Mailchimp\\Message\\'.ucfirst($name);
+
+        foreach ($possibleNames as $className)
+        {
+            if (class_exists($className, true)) {
+                return new $className($this->worker);
+            }
+        }
+
+        throw new RuntimeException('Class not found: '.$name);
+    }
+
+    public function getWorker()
+    {
+        return $this->worker;
     }
 
     /**

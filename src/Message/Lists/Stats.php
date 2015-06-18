@@ -1,7 +1,7 @@
 <?php
 
 namespace Mailchimp\Message\Lists;
-use Mailchimp\Message\MessageInterface;
+use Mailchimp\Message\AbstractMessage;
 
 /**
  * Statistics
@@ -11,7 +11,7 @@ use Mailchimp\Message\MessageInterface;
  * Class Stats
  * @package Mailchimp\Message\Lists
  */
-class Stats implements MessageInterface
+class Stats extends AbstractMessage
 {
     /**
      * The number of active members in the given list.
@@ -390,5 +390,10 @@ class Stats implements MessageInterface
     public function getAllowedHttpVerbs()
     {
         return false;
+    }
+
+    public function createRequestParams()
+    {
+        return null;
     }
 }

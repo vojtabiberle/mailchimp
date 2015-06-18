@@ -83,10 +83,10 @@ class JsonHydrator
                         /**
                          * Internal type Enum
                          */
-                        case $type === '\\Enum':
+                        /*case $type === '\\Enum':
                             $getter = $this->generateGetter($key);
                             $object->{$getter}()->setValue($value);
-                            break;
+                            break;*/
                         /**
                          * All basic types
                          */

@@ -8,21 +8,21 @@ use Mailchimp\Message\AbstractMessage;
 use Mailchimp\Message\Contact;
 use Mailchimp\Message\MessageInterface;
 
-class AccountDetails extends AbstractMessage implements MessageInterface
+class AccountDetails extends AbstractMessage
 {
     /**
      * Endpoint string relative to API URL
      *
-     * @var string $endpoint
+     * @var string $__endpoint
      */
-    protected $endpoint = '/';
+    protected $__endpoint = '/';
 
     /**
      * Available HTTP operations
      *
-     * @var array $httpVerbs
+     * @var array $__httpVerbs
      */
-    protected $httpVerbs = [HttpVerbs::GET];
+    protected $__httpVerbs = [HttpVerbs::GET];
 
     /**
      * ======= Mailchimp atributes =========
@@ -146,7 +146,7 @@ class AccountDetails extends AbstractMessage implements MessageInterface
      */
     public function getEndpoint()
     {
-        return $this->endpoint;
+        return $this->__endpoint;
     }
 
     /**
@@ -154,6 +154,11 @@ class AccountDetails extends AbstractMessage implements MessageInterface
      */
     public function getAllowedHttpVerbs()
     {
-        return $this->httpVerbs;
+        return $this->__httpVerbs;
+    }
+
+    public function createRequestParams()
+    {
+        return null;
     }
 }

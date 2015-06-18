@@ -8,8 +8,8 @@ use Mailchimp\Worker;
 
 class Members extends AbstractMessage
 {
-    protected $endpoint = '/lists/{list_id}/members/{member_id}';
-    protected $httpVerbs = [HttpVerbs::GET, HttpVerbs::PATCH, HttpVerbs::DELETE];
+    protected $__endpoint = '/lists/{list_id}/members/{member_id}';
+    protected $__httpVerbs = [HttpVerbs::GET, HttpVerbs::PATCH, HttpVerbs::DELETE];
 
     /**
      * The list-specific ID for the given email address
@@ -222,19 +222,19 @@ class Members extends AbstractMessage
     }
 
     /**
-     * @return Enum
+     * @return string
      */
     public function getStatus()
     {
-        return $this->status;
+        return $this->status->getValue();
     }
 
     /**
-     * @param Enum $status
+     * @param string $status
      */
     public function setStatus($status)
     {
-        $this->status = $status;
+        $this->status->setValue($status);
     }
 
     /**
@@ -400,7 +400,7 @@ class Members extends AbstractMessage
     /**
      * @return boolean
      */
-    public function isVip()
+    public function getVip()
     {
         return $this->vip;
     }
@@ -477,4 +477,11 @@ class Members extends AbstractMessage
         $this->list_id = $list_id;
     }
 
+    public function createRequestParams()
+    {
+        return [
+            'list_id' => $this->getListId(),
+            'member_id' => $this->getId()
+        ];
+    }
 }

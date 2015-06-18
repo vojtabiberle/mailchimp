@@ -2,9 +2,9 @@
 
 namespace Mailchimp\Message\Members;
 
-use Mailchimp\Message\MessageInterface;
+use Mailchimp\Message\AbstractMessage;
 
-class Notes implements MessageInterface
+class Notes extends AbstractMessage
 {
     /**
      * The note's ID.
@@ -106,5 +106,10 @@ class Notes implements MessageInterface
     public function getAllowedHttpVerbs()
     {
         return false;
+    }
+
+    public function createRequestParams()
+    {
+        return null;
     }
 }

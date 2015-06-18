@@ -12,31 +12,50 @@ abstract class AbstractMessageCollection extends AbstractMessage implements Mess
     /**
      * Endpoint string relative to API URL
      *
-     * @var string $endpoint
+     * @var string $__endpoint
      */
-    protected $endpoint;
+    protected $__endpoint;
 
     /**
      * Available HTTP operations
      *
-     * @var array $httpVerbs
+     * @var array $__httpVerbs
      */
-    protected $httpVerbs;
+    protected $__httpVerbs;
 
     /**
      * Class name of child stored in this collection
      *
-     * @var string $childClassName
+     * @var string $__childClassName
      */
-    protected $childClassName;
+    protected $__childClassName;
+
+    public function isChild(MessageInterface $object)
+    {
+        return $this->__childClassName === get_class($object);
+    }
 
     public function createChildClass()
     {
-        return new $this->childClassName($this->getWorker());
+        return new $this->__childClassName($this->getWorker());
     }
 
     public function getDataMemberName()
     {
-        return strtolower(str_replace($this->baseNS.'\\', '', $this->childClassName));
+        return strtolower(str_replace($this->__baseNS.'\\', '', $this->__childClassName));
+    }
+
+    public function jsonSerialize() {
+        $tmp = [];
+        foreach ($this->__elements as $element) {
+            $tmp[] = $element->jsonSerialize();
+        }
+
+        return $tmp;
+    }
+
+    public function createRequestParams()
+    {
+        return null;
     }
 }

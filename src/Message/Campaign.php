@@ -11,21 +11,21 @@ use Mailchimp\Worker;
  * Class Campaign
  * @package Mailchimp\Message
  */
-class Campaign extends AbstractMessage implements MessageInterface
+class Campaign extends AbstractMessage
 {
     /**
      * Endpoint string relative to API URL
      *
-     * @var string $endpoint
+     * @var string $__endpoint
      */
-    protected $endpoint = '/campaigns/{id}';
+    protected $__endpoint = '/campaigns/{id}';
 
     /**
      * Available HTTP operations
      *
-     * @var array $httpVerbs
+     * @var array $__httpVerbs
      */
-    protected $httpVerbs = [HttpVerbs::GET, HttpVerbs::DELETE];
+    protected $__httpVerbs = [HttpVerbs::GET, HttpVerbs::DELETE];
 
     /**
      * ======= Mailchimp atributes =========
@@ -156,19 +156,19 @@ class Campaign extends AbstractMessage implements MessageInterface
     }
 
     /**
-     * @return Enum
+     * @return string
      */
     public function getType()
     {
-        return $this->type;
+        return $this->type->getValue();
     }
 
     /**
-     * @param Enum $type
+     * @param string $type
      */
     public function setType($type)
     {
-        $this->type = $type;
+        $this->type->setValue($type);
     }
 
     /**
@@ -204,19 +204,19 @@ class Campaign extends AbstractMessage implements MessageInterface
     }
 
     /**
-     * @return Enum
+     * @return string
      */
     public function getStatus()
     {
-        return $this->status;
+        return $this->status->getValue();
     }
 
     /**
-     * @param Enum $status
+     * @param string $status
      */
     public function setStatus($status)
     {
-        $this->status = $status;
+        $this->status->setValue($status);
     }
 
     /**
@@ -377,5 +377,12 @@ class Campaign extends AbstractMessage implements MessageInterface
     public function setReportSummary($report_summary)
     {
         $this->report_summary = $report_summary;
+    }
+
+    public function createRequestParams()
+    {
+        return [
+            'id' => $this->getId()
+        ];
     }
 }

@@ -4,7 +4,9 @@ namespace Mailchimp;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\TransferException;
+use GuzzleHttp\Psr7\Request;
 use Mailchimp\Common\HttpVerbs;
+use Mailchimp\Common\Json;
 use Mailchimp\Common\JsonHydrator;
 use Mailchimp\Exception\Exception;
 use Mailchimp\Exception\RuntimeException;
@@ -53,19 +55,77 @@ class Worker
     /**
      * @param MessageInterface $object
      *
+     * @param null $params
      * @return MessageInterface
+     * @throws Exception
      */
     public function load(MessageInterface $object, $params = null)
     {
-        if (!in_array(HttpVerbs::GET, $object->getAllowedHttpVerbs(), false))
-        {
-            throw new RuntimeException('Operation '.HttpVerbs::GET.' is not allowed with object '.get_class($object).'.');
+        $endpoint = $this->prepareEndpoint($object->getEndpoint(), $params, $object->createRequestParams());
+        $request = new Request(HttpVerbs::GET, $endpoint);
+        $response = $this->send($request);
+        $hydrator = new JsonHydrator($object);
+        return $hydrator->hydrate((string)$response->getBody());
+    }
+
+    public function create(MessageInterface $object, $params = null)
+    {
+        $endpoint = $this->prepareEndpoint($object->getEndpoint(), $params, $object->createRequestParams());
+        $request = new Request(HttpVerbs::POST, $endpoint);
+        $request = $request->withBody(\GuzzleHttp\Psr7\stream_for(Json::encode($object)));
+        $response = $this->send($request);
+        $hydrator = new JsonHydrator($object);
+        return $hydrator->hydrate((string)$response->getBody());
+    }
+
+    public function update(MessageInterface $object, $params = null)
+    {
+        $endpoint = $this->prepareEndpoint($object->getEndpoint(), $params, $object->createRequestParams());
+        $request = new Request(HttpVerbs::PATCH, $endpoint);
+        $request = $request->withBody(\GuzzleHttp\Psr7\stream_for(Json::encode($object)));
+        $response = $this->send($request);
+        $hydrator = new JsonHydrator($object);
+        return $hydrator->hydrate((string)$response->getBody());
+    }
+
+    public function delete(MessageInterface $object, $params = null)
+    {
+        $endpoint = $this->prepareEndpoint($object->getEndpoint(), $params, $object->createRequestParams());
+        $request = new Request(HttpVerbs::DELETE, $endpoint);
+        $response = $this->send($request);
+        $hydrator = new JsonHydrator($object);
+        return $hydrator->hydrate((string)$response->getBody());
+    }
+
+    private function send(Request $request)
+    {
+        try {
+            $response = $this->client->send($request, ['auth' => [$this->clientName, $this->apiKey]]);
+        } catch (TransferException $e) {
+
+            $exceptionMessage = '';
+            if ($e->hasResponse()) {
+                $response = $e->getResponse();
+                $exceptionMessage .= ' Code: '.$response->getStatusCode(). ' - '.$response->getReasonPhrase();
+                $exceptionMessage .= ' Body: '.$response->getBody();
+            }
+
+            throw new RuntimeException($exceptionMessage);
         }
 
-        $endpoint = $object->getEndpoint();
+        return $response;
+    }
 
-        if (null !== $params) {
-            foreach ($params as $key => $value) {
+    private function prepareEndpoint($endpoint, $params, $defaultParams)
+    {
+        if (substr($endpoint, 0, 4) !== 'http') {
+            $endpoint = $this->apiUri.$endpoint;
+        }
+
+        $finalParams = !is_null($params) ? $params : $defaultParams;
+
+        if (null !== $finalParams) {
+            foreach ($finalParams as $key => $value) {
                 $endpoint = str_replace('{'.$key.'}', $value, $endpoint);
             }
         }
@@ -75,29 +135,6 @@ class Worker
             throw new Exception('Not all endpoint parameters was replaced: '.$endpoint);
         }
 
-        try {
-            $response = $this->client->get($this->apiUri . $endpoint, ['auth' => [$this->clientName, $this->apiKey]]);
-        } catch (TransferException $e) {
-
-            $exceptionMessage = 'Connection error.';
-            if ($e->hasResponse()) {
-                $response = $e->getResponse();
-                $exceptionMessage .= ' Code: '.$response->getStatusCode(). ' - '.$response->getReasonPhrase();
-            }
-
-            throw new RuntimeException($exceptionMessage);
-        }
-
-        //TODO: check for errors right here!
-
-        $hydrator = new JsonHydrator($object);
-
-        return $hydrator->hydrate((string)$response->getBody());
+        return $endpoint;
     }
-
-    public function extractEndpoint($uri)
-    {
-        return str_replace($this->apiUri, '', $uri);
-    }
-
 }

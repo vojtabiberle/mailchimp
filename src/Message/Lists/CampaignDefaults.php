@@ -1,7 +1,7 @@
 <?php
 
 namespace Mailchimp\Message\Lists;
-use Mailchimp\Message\MessageInterface;
+use Mailchimp\Message\AbstractMessage;
 
 /**
  * Campaign Defaults
@@ -11,7 +11,7 @@ use Mailchimp\Message\MessageInterface;
  * Class CampaignDefaults
  * @package Mailchimp\Message\Lists
  */
-class CampaignDefaults implements MessageInterface
+class CampaignDefaults extends AbstractMessage
 {
     /**
      * The default from name for campaigns sent to this list
@@ -113,5 +113,10 @@ class CampaignDefaults implements MessageInterface
     public function getAllowedHttpVerbs()
     {
         return false;
+    }
+
+    public function createRequestParams()
+    {
+        return null;
     }
 }

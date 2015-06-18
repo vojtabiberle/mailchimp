@@ -2,7 +2,7 @@
 
 namespace Mailchimp\Message;
 
-class Contact extends AbstractMessage implements MessageInterface
+class Contact extends AbstractMessage
 {
     /**
      * The company name assocated with the account.
@@ -173,5 +173,10 @@ class Contact extends AbstractMessage implements MessageInterface
     public function getAllowedHttpWerbs()
     {
         return false;
+    }
+
+    public function createRequestParams()
+    {
+        return null;
     }
 }

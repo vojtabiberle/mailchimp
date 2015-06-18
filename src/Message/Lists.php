@@ -6,10 +6,10 @@ use Mailchimp\Common\Enum;
 use Mailchimp\Common\HttpVerbs;
 use Mailchimp\Worker;
 
-class Lists extends AbstractMessage implements MessageInterface
+class Lists extends AbstractMessage
 {
-    protected $endpoint = '/lists/{list_id}';
-    protected $httpVerbs = [HttpVerbs::GET, HttpVerbs::PATCH, HttpVerbs::DELETE];
+    protected $__endpoint = '/lists/{list_id}';
+    protected $__httpVerbs = [HttpVerbs::GET, HttpVerbs::PATCH, HttpVerbs::DELETE];
 
     /**
      * A string that uniquely identifies this list
@@ -199,7 +199,7 @@ class Lists extends AbstractMessage implements MessageInterface
     /**
      * @return boolean
      */
-    public function isUseArchiveBar()
+    public function getUseArchiveBar()
     {
         return $this->use_archive_bar;
     }
@@ -295,7 +295,7 @@ class Lists extends AbstractMessage implements MessageInterface
     /**
      * @return boolean
      */
-    public function isEmailTypeOption()
+    public function getEmailTypeOption()
     {
         return $this->email_type_option;
     }
@@ -357,19 +357,19 @@ class Lists extends AbstractMessage implements MessageInterface
     }
 
     /**
-     * @return Enum
+     * @return string
      */
     public function getVisibility()
     {
-        return $this->visibility;
+        return $this->visibility->getValue();
     }
 
     /**
-     * @param Enum $visibility
+     * @param string $visibility
      */
     public function setVisibility($visibility)
     {
-        $this->visibility = $visibility;
+        $this->visibility->setValue($visibility);
     }
 
     /**
@@ -402,5 +402,12 @@ class Lists extends AbstractMessage implements MessageInterface
     public function setStats($stats)
     {
         $this->stats = $stats;
+    }
+
+    public function createRequestParams()
+    {
+        return [
+            'list_id' => $this->getId()
+        ];
     }
 }
