@@ -1,0 +1,8 @@
+#!/bin/bash
+
+HOST=mailchimp
+
+export PHP_IDE_CONFIG="serverName=$HOST"
+export XDEBUG_CONFIG="idekey=PHPSTORM remote_host=localhost remote_port=9000"
+
+php $@
