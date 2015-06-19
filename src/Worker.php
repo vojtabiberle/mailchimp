@@ -5,12 +5,14 @@ namespace Mailchimp;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Uri;
 use Mailchimp\Common\HttpVerbs;
 use Mailchimp\Common\Json;
 use Mailchimp\Common\JsonHydrator;
 use Mailchimp\Exception\Exception;
 use Mailchimp\Exception\RuntimeException;
 use Mailchimp\Message\MessageInterface;
+use Psr\Http\Message\UriInterface;
 
 class Worker
 {
@@ -59,39 +61,37 @@ class Worker
      * @return MessageInterface
      * @throws Exception
      */
-    public function load(MessageInterface $object, $params = null)
+    public function load(MessageInterface $object, $options = [])
     {
-        $endpoint = $this->prepareEndpoint($object->getEndpoint(), $params, $object->createRequestParams());
-        $request = new Request(HttpVerbs::GET, $endpoint);
+        $uri = $this->prepareEndpointUri($object, $options);
+        $request = $this->prepareRequest($uri, HttpVerbs::GET);
         $response = $this->send($request);
         $hydrator = new JsonHydrator($object);
         return $hydrator->hydrate((string)$response->getBody());
     }
 
-    public function create(MessageInterface $object, $params = null)
+    public function create(MessageInterface $object, $options = [])
     {
-        $endpoint = $this->prepareEndpoint($object->getEndpoint(), $params, $object->createRequestParams());
-        $request = new Request(HttpVerbs::POST, $endpoint);
-        $request = $request->withBody(\GuzzleHttp\Psr7\stream_for(Json::encode($object)));
+        $uri = $this->prepareEndpointUri($object, $options);
+        $request = $this->prepareRequest($uri, HttpVerbs::POST, $object);
         $response = $this->send($request);
         $hydrator = new JsonHydrator($object);
         return $hydrator->hydrate((string)$response->getBody());
     }
 
-    public function update(MessageInterface $object, $params = null)
+    public function update(MessageInterface $object, $options = [])
     {
-        $endpoint = $this->prepareEndpoint($object->getEndpoint(), $params, $object->createRequestParams());
-        $request = new Request(HttpVerbs::PATCH, $endpoint);
-        $request = $request->withBody(\GuzzleHttp\Psr7\stream_for(Json::encode($object)));
+        $uri = $this->prepareEndpointUri($object, $options);
+        $request = $this->prepareRequest($uri, HttpVerbs::PATCH, $object);
         $response = $this->send($request);
         $hydrator = new JsonHydrator($object);
         return $hydrator->hydrate((string)$response->getBody());
     }
 
-    public function delete(MessageInterface $object, $params = null)
+    public function delete(MessageInterface $object, $options = [])
     {
-        $endpoint = $this->prepareEndpoint($object->getEndpoint(), $params, $object->createRequestParams());
-        $request = new Request(HttpVerbs::DELETE, $endpoint);
+        $uri = $this->prepareEndpointUri($object, $options);
+        $request = $this->prepareRequest($uri, HttpVerbs::DELETE);
         $response = $this->send($request);
         $hydrator = new JsonHydrator($object);
         return $hydrator->hydrate((string)$response->getBody());
@@ -116,18 +116,35 @@ class Worker
         return $response;
     }
 
-    private function prepareEndpoint($endpoint, $params, $defaultParams)
+    private function prepareRequest(UriInterface $uri, $httpMethod, MessageInterface $body = null)
     {
+        $request = new Request($httpMethod, $uri);
+        if (!is_null($body)) {
+            $request = $request->withBody(\GuzzleHttp\Psr7\stream_for(Json::encode($body)));
+        }
+        return $request;
+    }
+
+    /**
+     * @param $object
+     * @param $options
+     * @return Uri
+     * @throws Exception
+     */
+    private function prepareEndpointUri(MessageInterface $object, array $options)
+    {
+        $endpoint = $object->getEndpoint();
+        $defaultParams = $object->getDefaultParams();
+        $params = array_key_exists('params', $options) ? $options['params'] : [];
+
         if (substr($endpoint, 0, 4) !== 'http') {
             $endpoint = $this->apiUri.$endpoint;
         }
 
-        $finalParams = !is_null($params) ? $params : $defaultParams;
+        $params = array_merge($params, $defaultParams);
 
-        if (null !== $finalParams) {
-            foreach ($finalParams as $key => $value) {
-                $endpoint = str_replace('{'.$key.'}', $value, $endpoint);
-            }
+        foreach ($params as $key => $value) {
+            $endpoint = str_replace('{'.$key.'}', $value, $endpoint);
         }
 
         if (preg_match('/.*{.*}.*/', $endpoint))
@@ -135,6 +152,47 @@ class Worker
             throw new Exception('Not all endpoint parameters was replaced: '.$endpoint);
         }
 
-        return $endpoint;
+        $uri = new Uri($endpoint);
+
+        if (array_key_exists('paging', $options['paging'])) {
+            $paging = $options['paging'];
+            if (array_key_exists('offset', $paging)) {
+                if (!is_numeric($paging['offset']) || $paging['offset'] < 0) {
+                    throw new RuntimeException('Paging offset cam be only positive number and 0.');
+                }
+                $uri = Uri::withQueryValue($uri, 'offset', $paging['offset']);
+            }
+            if(array_key_exists('count', $paging)) {
+                if (!is_numeric($paging['count']) || $paging['count'] < 1) {
+                    throw new RuntimeException('Paging count cam be only positive number.');
+                }
+                $uri = Uri::withQueryValue($uri, 'count', $paging['count']);
+            }
+        }
+
+        if (array_key_exists('fields', $options)) {
+            if (is_array($options['fields'])) {
+                $fields = implode(',', $options['fields']);
+            } else {
+                $fields = $options['fields'];
+            }
+            $uri = Uri::withQueryValue($uri, 'fields', $fields);
+        }
+
+        if (array_key_exists('exclude_fields', $options))
+        {
+            if (array_key_exists('fields', $options)) {
+                throw new RuntimeException('You can not use "fields" and "exclude_fields" in one API query.');
+            }
+
+            if (is_array($options['exclude_fields'])) {
+                $exclude_fields = implode(',', $options['exclude_fields']);
+            } else {
+                $exclude_fields = $options['exclude_fields'];
+            }
+            $uri = Uri::withQueryValue($uri, 'exclude_fields', $exclude_fields);
+        }
+
+        return $uri;
     }
 }

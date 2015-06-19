@@ -477,7 +477,7 @@ class Members extends AbstractMessage
         $this->list_id = $list_id;
     }
 
-    public function createRequestParams()
+    public function getDefaultParams()
     {
         return [
             'list_id' => $this->getListId(),

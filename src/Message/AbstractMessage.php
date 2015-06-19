@@ -44,7 +44,7 @@ abstract class AbstractMessage implements MessageInterface, JsonSerializable
         $this->__worker = $worker;
     }
 
-    abstract public function createRequestParams();
+    abstract public function getDefaultParams();
 
     /**
      * @return Client

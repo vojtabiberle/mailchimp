@@ -51,13 +51,13 @@ class Client
     }
 
     /**
+     * @param array $options
      * @return Message\Lists[]
      */
-    public function getLists()
+    public function getLists($options = [])
     {
-        return $this->worker->load(new ListsCollection($this->worker));
+        return $this->worker->load(new ListsCollection($this->worker), $options);
     }
-
 
     /**
      * @param $listId
@@ -66,12 +66,12 @@ class Client
      */
     public function getList($listId)
     {
-        return $this->worker->load(new Lists($this->worker), ['list_id' => $listId]);
+        return $this->worker->load(new Lists($this->worker), ['params' => ['list_id' => $listId]]);
     }
 
     public function getMember($listId, $memberId)
     {
-        return $this->worker->load(new Members($this->worker), ['list_id' => $listId, 'member_id' => $memberId]);
+        return $this->worker->load(new Members($this->worker), ['params' => ['list_id' => $listId, 'member_id' => $memberId]]);
     }
 
     /**

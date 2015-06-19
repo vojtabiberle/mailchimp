@@ -1,5 +1,16 @@
 {
-  "name": "vojtabiberle/mailchimp",
+  "name": "vojtabiberle/mailchimp-api-v3",
+  "type": "library",
+  "description": "Mailchimp API v3 client library",
+  "keywords": ["mailchimp", "api", "api v3", "rest", "web service", "client", "HTTP client"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Vojtěch Biberle",
+      "email": "vojtech.biberle@gmail.com",
+      "homepage": "https://github.com/vojtabiberle"
+    }
+  ],
   "require": {
     "guzzlehttp/guzzle": "6.0.*",
     "phpdocumentor/reflection-docblock": "2.0.4"

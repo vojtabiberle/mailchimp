@@ -379,7 +379,7 @@ class Campaign extends AbstractMessage
         $this->report_summary = $report_summary;
     }
 
-    public function createRequestParams()
+    public function getDefaultParams()
     {
         return [
             'id' => $this->getId()

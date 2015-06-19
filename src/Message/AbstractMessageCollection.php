@@ -8,6 +8,13 @@ use Mailchimp\Worker;
 
 abstract class AbstractMessageCollection extends AbstractMessage implements MessageCollectionInterface, ArrayCollectionInterface
 {
+    /**
+     * The total number of items matching the query, irrespective of pagination.
+     *
+     * @var int $total_items Item Count
+     */
+    private $total_items;
+
     use ArrayCollectionTrait;
     /**
      * Endpoint string relative to API URL
@@ -29,6 +36,22 @@ abstract class AbstractMessageCollection extends AbstractMessage implements Mess
      * @var string $__childClassName
      */
     protected $__childClassName;
+
+    /**
+     * @return int
+     */
+    public function getTotalItems()
+    {
+        return $this->total_items;
+    }
+
+    /**
+     * @param int $total_items
+     */
+    public function setTotalItems($total_items)
+    {
+        $this->total_items = $total_items;
+    }
 
     public function isChild(MessageInterface $object)
     {
@@ -54,8 +77,8 @@ abstract class AbstractMessageCollection extends AbstractMessage implements Mess
         return $tmp;
     }
 
-    public function createRequestParams()
+    public function getDefaultParams()
     {
-        return null;
+        return [];
     }
 }

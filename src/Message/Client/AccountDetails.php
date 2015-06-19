@@ -157,8 +157,8 @@ class AccountDetails extends AbstractMessage
         return $this->__httpVerbs;
     }
 
-    public function createRequestParams()
+    public function getDefaultParams()
     {
-        return null;
+        return [];
     }
 }

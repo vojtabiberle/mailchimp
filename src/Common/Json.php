@@ -27,10 +27,9 @@ class Json
     /**
      * Static class - cannot be instantiated.
      */
-    final public function __construct()
-    {
-        throw new Nette\StaticClassException;
-    }
+    final private function __construct()
+    {}
+
     /**
      * Returns the JSON representation of a value.
      * @param  mixed

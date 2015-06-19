@@ -1,8 +1,8 @@
-# Mailchimp v3 PHP API client
-Unoficial Mailchimp v3 API client library
+# Mailchimp API v3 PHP client
+Unoficial Mailchimp API v3 PHP client library
 
 ## This library is under development
- - event not every endpoins are implemented yet (but you can help me! its easy!)
+ - even not every endpoints are implemented yet (but you can help me! its easy!)
 
 ## Usage
 

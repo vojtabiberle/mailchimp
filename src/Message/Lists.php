@@ -404,7 +404,7 @@ class Lists extends AbstractMessage
         $this->stats = $stats;
     }
 
-    public function createRequestParams()
+    public function getDefaultParams()
     {
         return [
             'list_id' => $this->getId()

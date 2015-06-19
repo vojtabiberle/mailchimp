@@ -115,8 +115,8 @@ class CampaignDefaults extends AbstractMessage
         return false;
     }
 
-    public function createRequestParams()
+    public function getDefaultParams()
     {
-        return null;
+        return [];
     }
 }

@@ -6,5 +6,5 @@ interface MessageInterface
 {
     public function getEndpoint();
     public function getAllowedHttpVerbs();
-    public function createRequestParams();
+    public function getDefaultParams();
 }
