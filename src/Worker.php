@@ -154,7 +154,7 @@ class Worker
 
         $uri = new Uri($endpoint);
 
-        if (array_key_exists('paging', $options['paging'])) {
+        if (array_key_exists('paging', $options)) {
             $paging = $options['paging'];
             if (array_key_exists('offset', $paging)) {
                 if (!is_numeric($paging['offset']) || $paging['offset'] < 0) {
